@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quản lý rạp chiếu phim</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ECEAF3;--sf:#fff;--ink:#241632;--mut:#6c6479;--ln:#d9d4e4;--ac:#3b1f4a;--acx:#fff;--hi:#f2a93b;--hix:#241632;--sold:#cfc9da;--ok:#2e7d5b;--bad:#b3322f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1424;--sf:#271d33;--ink:#efeaf6;--mut:#a79db5;--ln:#3a2f49;--ac:#c9a7e8;--acx:#1b1424;--sold:#3d3349;--ok:#58c08f;--bad:#ff7f7a}}
+:root[data-theme="dark"]{--bg:#1b1424;--sf:#271d33;--ink:#efeaf6;--mut:#a79db5;--ln:#3a2f49;--ac:#c9a7e8;--acx:#1b1424;--sold:#3d3349;--ok:#58c08f;--bad:#ff7f7a}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "Be Vietnam Pro",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Be Vietnam Pro",sans-serif;margin:0;letter-spacing:-.01em}
+h1{font-size:22px;font-weight:800}h2{font-size:26px;font-weight:800;margin-bottom:14px}h3{font-size:16px;font-weight:600}
+.app{max-width:1000px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{border:1px solid var(--ln);background:var(--sf);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-weight:500;cursor:pointer}
+nav button[aria-current="page"]{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.shows{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.show{flex:0 0 auto;text-align:left;border:1px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;cursor:pointer;min-width:170px}
+.show[aria-pressed="true"]{border-color:var(--ac);box-shadow:inset 0 0 0 2px var(--ac)}
+.show b{display:block}.show small{color:var(--mut)}
+.screen{height:8px;border-radius:0 0 50% 50%;background:var(--ac);margin:4px auto 6px;max-width:420px;opacity:.85}
+.cap{text-align:center;color:var(--mut);font-size:13px;margin-bottom:12px}
+.map{overflow-x:auto;padding:4px 0}
+.row{display:flex;gap:6px;justify-content:center;margin-bottom:6px;min-width:max-content}
+.rl{width:20px;align-self:center;color:var(--mut);font-weight:600;text-align:center}
+.seat{width:34px;height:34px;border-radius:8px 8px 4px 4px;border:1px solid var(--ln);background:var(--sf);color:var(--ink);font:500 12px inherit;cursor:pointer}
+.seat.pick{background:var(--hi);color:var(--hix);border-color:var(--hi);font-weight:600}
+.seat.sold{background:var(--sold);color:var(--mut);cursor:not-allowed;border-color:var(--sold)}
+.legend{display:flex;gap:14px;justify-content:center;font-size:13px;color:var(--mut);margin:10px 0 0;flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--ln)}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--ln);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.f{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));align-items:end}
+.btn{border:0;background:var(--ac);color:var(--acx);padding:10px 16px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.lnk{border:0;background:none;color:var(--bad);font:inherit;cursor:pointer;padding:4px 6px;text-decoration:underline}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+.stat b{display:block;font:800 26px "Bricolage Grotesque",sans-serif}.stat span{color:var(--mut);font-size:13px}
+.meter{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:4px}.meter i{display:block;height:100%;background:var(--ac)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--ln);white-space:nowrap}th{color:var(--mut);font-weight:500}
+.msg{min-height:22px;margin:0 0 10px;font-weight:500}.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+.empty{text-align:center;padding:32px 12px;color:var(--mut)}
+@media(max-width:520px){.seat{width:30px;height:30px}h2{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>Quản lý rạp chiếu phim</h1>
+<nav id="nav" aria-label="Chức năng"></nav></header>
+<p id="msg" class="msg" role="status" aria-live="polite"></p>
+<main id="main"></main>
+</div>
+<script>
+const $=s=>document.querySelector(s),L='ABCDEFGHIJ';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const vnd=n=>Number(n).toLocaleString('vi-VN')+' ₫';
+const fdt=t=>new Date(t).toLocaleString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const uid=()=>Math.random().toString(36).slice(2,9);
+const pad=n=>String(n).padStart(2,'0');
+function lt(off,h,m){const d=new Date();d.setDate(d.getDate()+off);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(h)+':'+pad(m)}
+function seed(){
+ const m=[{id:'m1',title:'Mùa hè không tên',genre:'Tâm lý',dur:112},{id:'m2',title:'Biệt đội tàu ngầm',genre:'Hành động',dur:128},{id:'m3',title:'Tiệm bánh cuối phố',genre:'Hoạt hình',dur:95}];
+ const r=[{id:'r1',name:'Phòng 1',rows:6,cols:8},{id:'r2',name:'Phòng 2',rows:5,cols:6}];
+ const s=[{id:'s1',movieId:'m1',roomId:'r1',time:lt(1,18,30),price:90000},{id:'s2',movieId:'m2',roomId:'r1',time:lt(1,21,0),price:100000},{id:'s3',movieId:'m3',roomId:'r2',time:lt(1,15,0),price:70000}];
+ return{movies:m,rooms:r,shows:s,bookings:[]};
+}
+function load(){try{const x=localStorage.getItem('cinema-db');if(x)return JSON.parse(x)}catch(e){}return seed()}
+function save(){try{localStorage.setItem('cinema-db',JSON.stringify(db))}catch(e){}}
+let db=load(),view='sell',selShow=null,picked=[];
+const mv=id=>db.movies.find(x=>x.id===id)||{title:'(đã xóa)',dur:0},rm=id=>db.rooms.find(x=>x.id===id);
+const soldSeats=sid=>new Set(db.bookings.filter(b=>b.showId===sid).flatMap(b=>b.seats));
+function say(t,ok){const e=$('#msg');e.textContent=t;e.className='msg '+(ok?'ok':'bad')}
+const empty=(a,b)=>`<div class="card empty"><h3>${a}</h3><p>${b}</p></div>`;
+const val=id=>$('#'+id).value.trim();
+
+function sellView(){
+ const shows=[...db.shows].sort((a,b)=>a.time.localeCompare(b.time));
+ if(!shows.length)return empty('Chưa có suất chiếu','Vào mục Suất chiếu để thêm suất đầu tiên.');
+ if(!selShow||!db.shows.some(s=>s.id===selShow))selShow=shows[0].id;
+ const s=db.shows.find(x=>x.id===selShow),r=rm(s.roomId),sold=soldSeats(s.id);
+ let seats='';
+ for(let i=0;i<r.rows;i++){seats+=`<div class="row"><span class="rl">${L[i]}</span>`;
+  for(let j=1;j<=r.cols;j++){const id=L[i]+j,so=sold.has(id),pk=picked.includes(id);
+   seats+=`<button class="seat${so?' sold':''}${pk?' pick':''}" ${so?'disabled':''} data-seat="${id}" aria-label="Ghế ${id}${so?' đã bán':''}" aria-pressed="${pk}">${j}</button>`}
+  seats+='</div>'}
+ return `<h2>Bán vé</h2>
+ <div class="shows">${shows.map(x=>`<button class="show" data-show="${x.id}" aria-pressed="${x.id===selShow}"><b>${esc(mv(x.movieId).title)}</b><small>${fdt(x.time)} · ${esc(rm(x.roomId).name)}</small></button>`).join('')}</div>
+ <div class="card"><div class="screen"></div><p class="cap">Màn hình · ${esc(r.name)} · còn ${r.rows*r.cols-sold.size}/${r.rows*r.cols} ghế · ${vnd(s.price)}/vé</p>
+ <div class="map">${seats}</div>
+ <div class="legend"><span><i></i>Còn trống</span><span><i style="background:var(--hi)"></i>Đang chọn</span><span><i style="background:var(--sold)"></i>Đã bán</span></div></div>
+ <div class="card"><div class="f"><div><label for="cust">Tên khách (không bắt buộc)</label><input id="cust" placeholder="Nguyễn Văn A"></div>
+ <div><label>Ghế đã chọn</label><div><b>${picked.length?picked.join(', '):'Chưa chọn ghế'}</b></div></div>
+ <div><label>Tổng tiền</label><div><b>${vnd(picked.length*s.price)}</b></div></div>
+ <button class="btn" data-act="sell" ${picked.length?'':'disabled'}>Bán ${picked.length||''} vé</button></div></div>`;
+}
+function movieView(){
+ return `<h2>Phim</h2>
+ <div class="card"><div class="f"><div><label for="mt">Tên phim</label><input id="mt"></div><div><label for="mg">Thể loại</label><input id="mg"></div>
+ <div><label for="md">Thời lượng (phút)</label><input id="md" type="number" min="1" value="100"></div><button class="btn" data-act="addMovie">Thêm phim</button></div></div>
+ ${db.movies.length?`<div class="card tw"><table><tr><th>Tên phim</th><th>Thể loại</th><th>Thời lượng</th><th></th></tr>${db.movies.map(m=>`<tr><td>${esc(m.title)}</td><td>${esc(m.genre)}</td><td>${m.dur} phút</td><td><button class="lnk" data-act="delMovie" data-id="${m.id}">Xóa</button></td></tr>`).join('')}</table></div>`:empty('Chưa có phim','Thêm phim ở form phía trên.')}`;
+}
+function showView(){
+ const sh=[...db.shows].sort((a,b)=>a.time.localeCompare(b.time));
+ return `<h2>Suất chiếu</h2>
+ ${db.movies.length?`<div class="card"><div class="f"><div><label for="sm">Phim</label><select id="sm">${db.movies.map(m=>`<option value="${m.id}">${esc(m.title)}</option>`).join('')}</select></div>
+ <div><label for="sr">Phòng</label><select id="sr">${db.rooms.map(r=>`<option value="${r.id}">${esc(r.name)} (${r.rows*r.cols} ghế)</option>`).join('')}</select></div>
+ <div><label for="st">Giờ chiếu</label><input id="st" type="datetime-local" value="${lt(1,19,0)}"></div>
+ <div><label for="sp">Giá vé (₫)</label><input id="sp" type="number" min="0" step="1000" value="90000"></div>
+ <button class="btn" data-act="addShow">Thêm suất</button></div></div>`:empty('Cần có phim trước','Thêm phim ở mục Phim rồi quay lại.')}
+ ${sh.length?`<div class="card tw"><table><tr><th>Phim</th><th>Phòng</th><th>Giờ chiếu</th><th>Giá vé</th><th>Đã bán</th><th></th></tr>${sh.map(s=>`<tr><td>${esc(mv(s.movieId).title)}</td><td>${esc(rm(s.roomId).name)}</td><td>${fdt(s.time)}</td><td>${vnd(s.price)}</td><td>${soldSeats(s.id).size}</td><td><button class="lnk" data-act="delShow" data-id="${s.id}">Xóa</button></td></tr>`).join('')}</table></div>`:''}`;
+}
+function reportView(){
+ const rev=db.bookings.reduce((a,b)=>a+b.total,0),tk=db.bookings.reduce((a,b)=>a+b.seats.length,0);
+ const cap=db.shows.reduce((a,s)=>a+rm(s.roomId).rows*rm(s.roomId).cols,0),occ=cap?Math.round(tk/cap*100):0;
+ const byM=db.movies.map(m=>({m,rev:db.bookings.filter(b=>db.shows.find(s=>s.id===b.showId)?.movieId===m.id).reduce((a,b)=>a+b.total,0)})).sort((a,b)=>b.rev-a.rev);
+ const mx=Math.max(1,...byM.map(x=>x.rev));
+ return `<h2>Doanh thu</h2>
+ <div class="grid"><div class="card stat"><b>${vnd(rev)}</b><span>Tổng doanh thu</span></div><div class="card stat"><b>${tk}</b><span>Vé đã bán</span></div><div class="card stat"><b>${occ}%</b><span>Tỉ lệ lấp đầy các suất</span></div></div>
+ <div class="card"><h3>Theo phim</h3>${byM.map(x=>`<div style="margin-top:10px"><div class="bar" style="margin:0"><span>${esc(x.m.title)}</span><b>${vnd(x.rev)}</b></div><div class="meter"><i style="width:${x.rev/mx*100}%"></i></div></div>`).join('')||'<p class="cap">Chưa có phim.</p>'}</div>
+ <div class="card tw"><h3 style="margin-bottom:8px">Vé đã bán</h3>${db.bookings.length?`<table><tr><th>Phim / suất</th><th>Ghế</th><th>Khách</th><th>Tiền</th><th></th></tr>${[...db.bookings].reverse().map(b=>{const s=db.shows.find(x=>x.id===b.showId)||{};return `<tr><td>${esc(mv(s.movieId).title)} · ${s.time?fdt(s.time):''}</td><td>${b.seats.join(', ')}</td><td>${esc(b.customer||'Khách lẻ')}</td><td>${vnd(b.total)}</td><td><button class="lnk" data-act="refund" data-id="${b.id}">Hoàn vé</button></td></tr>`}).join('')}</table>`:'<p class="cap" style="text-align:left">Chưa bán vé nào. Vào mục Bán vé để bắt đầu.</p>'}</div>`;
+}
+const tabs=[['sell','Bán vé'],['shows','Suất chiếu'],['movies','Phim'],['report','Doanh thu']];
+function render(){
+ $('#nav').innerHTML=tabs.map(([k,n])=>`<button data-v="${k}" ${k===view?'aria-current="page"':''}>${n}</button>`).join('');
+ $('#main').innerHTML={sell:sellView,shows:showView,movies:movieView,report:reportView}[view]();
+}
+const A={
+ sell(){const s=db.shows.find(x=>x.id===selShow),sold=soldSeats(s.id);
+  if(picked.some(p=>sold.has(p)))return say('Có ghế vừa được bán. Hãy chọn lại.');
+  db.bookings.push({id:uid(),showId:s.id,seats:[...picked],customer:val('cust'),total:picked.length*s.price,at:Date.now()});
+  say('Đã bán '+picked.length+' vé: '+picked.join(', '),1);picked=[];save();render()},
+ addMovie(){const t=val('mt'),d=+val('md');if(!t)return say('Nhập tên phim.');if(!(d>0))return say('Thời lượng phải lớn hơn 0.');
+  db.movies.push({id:uid(),title:t,genre:val('mg')||'Khác',dur:d});say('Đã thêm phim "'+t+'".',1);save();render()},
+ delMovie(id){if(db.shows.some(s=>s.movieId===id))return say('Phim đang có suất chiếu. Hãy xóa suất chiếu trước.');
+  db.movies=db.movies.filter(m=>m.id!==id);say('Đã xóa phim.',1);save();render()},
+ addShow(){const movieId=val('sm'),roomId=val('sr'),time=val('st'),price=+val('sp');
+  if(!time)return say('Chọn giờ chiếu.');if(!(price>=0))return say('Giá vé không hợp lệ.');
+  const st=new Date(time).getTime(),en=st+(mv(movieId).dur+15)*6e4;
+  const clash=db.shows.find(s=>s.roomId===roomId&&st<new Date(s.time).getTime()+(mv(s.movieId).dur+15)*6e4&&new Date(s.time).getTime()<en);
+  if(clash)return say('Trùng lịch với "'+mv(clash.movieId).title+'" lúc '+fdt(clash.time)+' (đã tính 15 phút dọn phòng).');
+  db.shows.push({id:uid(),movieId,roomId,time,price});say('Đã thêm suất chiếu.',1);save();render()},
+ delShow(id){if(db.bookings.some(b=>b.showId===id))return say('Suất đã có vé bán ra. Hãy hoàn vé trước.');
+  db.shows=db.shows.filter(s=>s.id!==id);say('Đã xóa suất chiếu.',1);save();render()},
+ refund(id){db.bookings=db.bookings.filter(b=>b.id!==id);say('Đã hoàn vé, ghế được mở lại.',1);save();render()}
+};
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.v){view=t.dataset.v;picked=[];$('#msg').textContent='';return render()}
+ if(t.dataset.show){selShow=t.dataset.show;picked=[];return render()}
+ if(t.dataset.seat){const i=picked.indexOf(t.dataset.seat);i<0?picked.push(t.dataset.seat):picked.splice(i,1);const c=$('#cust')?.value;render();if(c)$('#cust').value=c;return}
+ if(t.dataset.act)A[t.dataset.act](t.dataset.id);
+});
+render();
+</script>
+</body>
+</html>
